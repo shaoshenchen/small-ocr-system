@@ -1,0 +1,12 @@
+shapely @ file:///../Shapely-1.7.1-cp37-cp37m-win_amd64.whl
+python-levenshtein @ file:///../python_Levenshtein-0.12.2-cp37-cp37m-win_amd64.whl
+paddlepaddle==2.1.0
+shapely
+scikit-image==0.17.2
+imgaug==0.4.0
+pyclipper
+lmdb
+tqdm
+numpy
+visualdl
+opencv-contrib-python==4.2.0.32
