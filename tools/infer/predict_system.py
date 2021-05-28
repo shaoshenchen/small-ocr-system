@@ -13,7 +13,10 @@
 # limitations under the License.
 from tqdm import tqdm
 import sys
-sys.path.append("D:/junior/PaddleOCR")
+import os
+__dir__ = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(__dir__)
+sys.path.append(os.path.abspath(os.path.join(__dir__, '../..')))
 from tools.infer.utility import draw_ocr_box_txt
 from ppocr.utils.logging import get_logger
 from ppocr.utils.utility import get_image_file_list, check_and_read_gif
