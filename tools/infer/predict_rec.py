@@ -18,26 +18,27 @@ __dir__ = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(__dir__)
 sys.path.append(os.path.abspath(os.path.join(__dir__, '../..')))
 
+from ppocr.utils.utility import get_image_file_list, check_and_read_gif
+from ppocr.utils.logging import get_logger
+from ppocr.postprocess import build_post_process
+import tools.infer.utility as utility
+import paddle
+import traceback
+import time
+import math
+import numpy as np
+import cv2
+
 os.environ["FLAGS_allocator_strategy"] = 'auto_growth'
 
-import cv2
-import numpy as np
-import math
-import time
-import traceback
-import paddle
-
-import tools.infer.utility as utility
-from ppocr.postprocess import build_post_process
-from ppocr.utils.logging import get_logger
-from ppocr.utils.utility import get_image_file_list, check_and_read_gif
 
 logger = get_logger()
 
 
 class TextRecognizer(object):
     def __init__(self, args):
-        self.rec_image_shape = [int(v) for v in args.rec_image_shape.split(",")]
+        self.rec_image_shape = [int(v)
+                                for v in args.rec_image_shape.split(",")]
         self.character_type = args.rec_char_type
         self.rec_batch_num = args.rec_batch_num
         self.rec_algorithm = args.rec_algorithm
@@ -254,6 +255,9 @@ def main(args):
     total_images_num = 0
     valid_image_file_list = []
     img_list = []
+    # 评测代码1
+    f = open("results.txt", "w", encoding="utf-8")
+    _tempImgList = list()
     for idx, image_file in enumerate(image_file_list):
         img, flag = check_and_read_gif(image_file)
         if not flag:
@@ -278,14 +282,25 @@ def main(args):
                     "Please set --rec_image_shape='3,32,100' and --rec_char_type='en' "
                 )
                 exit()
+
             for ino in range(len(img_list)):
                 logger.info("Predicts of {}:{}".format(valid_image_file_list[
                     ino], rec_res[ino]))
+                # 评测代码2
+                _tempImgList.append([
+                  int(valid_image_file_list[ino].split("\\")[1].split(".")[0]),
+                  rec_res[ino][0]
+                ])
             total_images_num += len(valid_image_file_list)
+
             valid_image_file_list = []
             img_list = []
     logger.info("Total predict time for {} images, cost: {:.3f}".format(
         total_images_num, total_run_time))
+    # 评测代码3
+    _tempImgList = sorted(_tempImgList, key=lambda x:x[0])
+    for img_name, label in _tempImgList:
+      f.write(str(img_name) + ".jpg\t" + label + "\n")
 
 
 if __name__ == "__main__":
